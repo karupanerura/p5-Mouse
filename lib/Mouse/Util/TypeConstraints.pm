@@ -196,6 +196,12 @@ sub class_type {
     my($name, $options) = @_;
     my $class = $options->{class} || $name;
 
+    # multi types
+    if ($class =~ /\|/) {
+        my @types = map { find_or_create_isa_type_constraint($_) } split /\|/, $class;
+        return _find_or_create_union_type(@types);
+    }
+
     # ClassType
     return subtype $name => (
         as           => 'Object',
@@ -207,6 +213,12 @@ sub class_type {
 sub role_type {
     my($name, $options) = @_;
     my $role = $options->{role} || $name;
+
+    # multi types
+    if ($role =~ /\|/) {
+        my @types = map { find_or_create_does_type_constraint($_) } split /\|/, $role;
+        return _find_or_create_union_type(@types);
+    }
 
     # RoleType
     return subtype $name => (
