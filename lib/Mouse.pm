@@ -7,6 +7,7 @@ our $VERSION = 'v2.4.5';
 
 use Carp         ();
 use Scalar::Util ();
+use B::Hooks::EndOfScope qw/on_scope_end/;
 
 use Mouse::Util ();
 
@@ -37,6 +38,21 @@ sub extends {
 }
 
 sub with {
+    my $lazy;
+    if (ref $_[-1] && ref $_[-1] eq 'HASH') {
+        my $attr = pop;
+        $lazy = $attr->{lazy};
+    }
+
+    if ($lazy) {
+        my $caller = caller;
+        my @args   = @_;
+        return on_scope_end {
+            Mouse::Util::apply_all_roles($caller, @args);
+            return;
+        };
+    }
+
     Mouse::Util::apply_all_roles(scalar(caller), @_);
     return;
 }

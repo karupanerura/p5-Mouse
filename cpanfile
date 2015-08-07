@@ -3,6 +3,7 @@ requires 'perl', '5.008005';
 # Scalar::Util < 1.14 has a bug.
 # > Fixed looks_like_number(undef) to return false for perl >= 5.009002
 requires 'Scalar::Util', '1.14';
+requires 'B::Hooks::EndOfScope';
 
 requires 'XSLoader', '0.02';
 
